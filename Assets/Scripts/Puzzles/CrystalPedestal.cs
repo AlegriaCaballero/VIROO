@@ -6,6 +6,14 @@ public class CrystalPedestal : MonoBehaviour
 
     public bool IsActivated { get; private set; }
 
+    [Header("Snap Point")]
+    public Transform snapPoint;
+
+    [Header("Efectos")]
+    public Light pedestalLight;
+
+    private Crystal currentCrystal;
+
     private void OnTriggerEnter(Collider other)
     {
         if (IsActivated)
@@ -19,6 +27,16 @@ public class CrystalPedestal : MonoBehaviour
         if (crystal.crystalType == requiredType)
         {
             IsActivated = true;
+
+            currentCrystal = crystal;
+
+            crystal.transform.position = snapPoint.position;
+            crystal.transform.rotation = snapPoint.rotation;
+
+            if (pedestalLight != null)
+            {
+                pedestalLight.intensity = 0.5f;
+            }
 
             Debug.Log(requiredType + " colocado correctamente");
         }

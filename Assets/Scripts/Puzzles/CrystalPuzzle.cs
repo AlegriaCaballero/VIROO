@@ -4,6 +4,10 @@ public class CrystalPuzzle : PuzzleBase
 {
     public CrystalPedestal[] pedestals;
 
+    public GameObject rewardObject;
+
+    private bool rewardSpawned = false;
+
     private void Update()
     {
         if (completed)
@@ -16,5 +20,15 @@ public class CrystalPuzzle : PuzzleBase
         }
 
         CompletePuzzle();
+
+        if (!rewardSpawned)
+        {
+            rewardSpawned = true;
+
+            if (rewardObject != null)
+            {
+                rewardObject.SetActive(true);
+            }
+        }
     }
 }
