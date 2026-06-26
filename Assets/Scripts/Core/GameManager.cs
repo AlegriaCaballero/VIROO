@@ -5,10 +5,15 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     [Header("Progreso")]
-    public int completedPuzzles = 0;
+    [SerializeField] private int completedPuzzles;
 
     [Header("Configuración")]
-    public int totalPuzzles = 4;
+    [SerializeField] private int totalPuzzles = 3;
+
+    [Header("Secuencia final")]
+    [SerializeField] private FinalSequenceController finalSequence;
+
+    private bool finalActivated;
 
     private void Awake()
     {
@@ -24,18 +29,25 @@ public class GameManager : MonoBehaviour
 
     public void PuzzleCompleted()
     {
+        if (finalActivated)
+            return;
+
         completedPuzzles++;
 
-        Debug.Log("Puzzle completado. Total: " + completedPuzzles);
+        Debug.Log(
+            $"Puzzle completado: {completedPuzzles}/{totalPuzzles}"
+        );
 
         if (completedPuzzles >= totalPuzzles)
         {
-            ActivateFinalAltar();
-        }
-    }
+            finalActivated = true;
 
-    private void ActivateFinalAltar()
-    {
-        Debug.Log("ALTAR DEL MONARCA DESBLOQUEADO");
+            if (finalSequence != null)
+                finalSequence.UnlockAltar();
+            else
+                Debug.LogWarning(
+                    "No se asignó FinalSequence en GameManager."
+                );
+        }
     }
 }
