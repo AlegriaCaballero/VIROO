@@ -2,11 +2,18 @@ using UnityEngine;
 
 public class RunePuzzle : PuzzleBase
 {
+    [Header("Runas")]
     public RuneButton[] runes;
 
-    private int currentStep = 0;
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip correctClip;
+    public AudioClip errorClip;
+    public AudioClip completedClip;
 
-    private int[] correctOrder =
+    private int currentStep;
+
+    private readonly int[] correctOrder =
     {
         0,
         1,
@@ -16,26 +23,31 @@ public class RunePuzzle : PuzzleBase
 
     public void PressRune(RuneButton rune)
     {
-        if (completed)
+        if (completed || rune == null)
+            return;
+
+        if (currentStep >= correctOrder.Length)
             return;
 
         if (rune.runeIndex == correctOrder[currentStep])
         {
             rune.TurnOn();
-
             currentStep++;
-
-            Debug.Log("Runa correcta");
 
             if (currentStep >= correctOrder.Length)
             {
+                PlaySound(completedClip, 1f);
                 CompletePuzzle();
             }
+            else
+            {
+                PlaySound(correctClip, 0.7f);
+            }
+
+            return;
         }
-        else
-        {
-            ResetPuzzle();
-        }
+
+        ResetPuzzle();
     }
 
     private void ResetPuzzle()
@@ -44,9 +56,18 @@ public class RunePuzzle : PuzzleBase
 
         foreach (RuneButton rune in runes)
         {
-            rune.TurnOff();
+            if (rune != null)
+                rune.TurnOff();
         }
 
+        PlaySound(errorClip, 0.8f);
+
         Debug.Log("Secuencia incorrecta");
+    }
+
+    private void PlaySound(AudioClip clip, float volume)
+    {
+        if (audioSource != null && clip != null)
+            audioSource.PlayOneShot(clip, volume);
     }
 }

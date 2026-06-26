@@ -2,33 +2,42 @@ using UnityEngine;
 
 public class CrystalPuzzle : PuzzleBase
 {
-    public CrystalPedestal[] pedestals;
+    [Header("Pedestales")]
+    [SerializeField] private CrystalPedestal[] pedestals;
 
-    public GameObject rewardObject;
-
-    private bool rewardSpawned = false;
+    [Header("Audio al completar")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip completedClip;
 
     private void Update()
     {
         if (completed)
             return;
 
-        foreach (var pedestal in pedestals)
+        if (pedestals == null || pedestals.Length == 0)
+            return;
+
+        foreach (CrystalPedestal pedestal in pedestals)
         {
-            if (!pedestal.IsActivated)
+            if (pedestal == null || !pedestal.IsActivated)
                 return;
         }
 
         CompletePuzzle();
+    }
 
-        if (!rewardSpawned)
+    public override void CompletePuzzle()
+    {
+        // Evita reproducir el sonido varias veces.
+        if (completed)
+            return;
+
+        if (audioSource != null && completedClip != null)
         {
-            rewardSpawned = true;
-
-            if (rewardObject != null)
-            {
-                rewardObject.SetActive(true);
-            }
+            audioSource.PlayOneShot(completedClip, 1f);
         }
+
+        // Marca el puzzle como completado y suma 1 en GameManager.
+        base.CompletePuzzle();
     }
 }

@@ -12,6 +12,10 @@ public class CrystalPedestal : MonoBehaviour
     [Header("Efectos")]
     public Light pedestalLight;
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip crystalPlacedClip;
+
     private Crystal currentCrystal;
 
     private void OnTriggerEnter(Collider other)
@@ -22,23 +26,26 @@ public class CrystalPedestal : MonoBehaviour
         Crystal crystal = other.GetComponent<Crystal>();
 
         if (crystal == null)
+            crystal = other.GetComponentInParent<Crystal>();
+
+        if (crystal == null)
             return;
 
-        if (crystal.crystalType == requiredType)
-        {
-            IsActivated = true;
+        if (crystal.crystalType != requiredType)
+            return;
 
-            currentCrystal = crystal;
+        IsActivated = true;
+        currentCrystal = crystal;
 
-            crystal.transform.position = snapPoint.position;
-            crystal.transform.rotation = snapPoint.rotation;
+        crystal.transform.position = snapPoint.position;
+        crystal.transform.rotation = snapPoint.rotation;
 
-            if (pedestalLight != null)
-            {
-                pedestalLight.intensity = 0.5f;
-            }
+        if (pedestalLight != null)
+            pedestalLight.intensity = 5f;
 
-            Debug.Log(requiredType + " colocado correctamente");
-        }
+        if (audioSource != null && crystalPlacedClip != null)
+            audioSource.PlayOneShot(crystalPlacedClip, 0.8f);
+
+        Debug.Log(requiredType + " colocado correctamente");
     }
 }
